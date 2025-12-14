@@ -1,0 +1,41 @@
+#include <cpr/cpr.h>
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main() {
+	setlocale(LC_ALL, "RU");
+	string url = "https://httpbin.org/headers";
+	string command;
+
+	while (command != "exit") {	
+		cout << "Enter command(get, patch, post, put, delete, exit): "; cin >> command;
+
+		cpr::Response response;
+		if (command == "exit") {
+			cout << "Procces was stopped\n";
+			break;
+		}
+		else if (command == "get") {
+			response = cpr::Get(cpr::Url(url));
+			cout << response.text << endl;
+		}
+		else if (command == "patch") {
+			response = cpr::Patch(cpr::Url(url));
+			cout << response.text << endl;
+		}
+		else if (command == "post") {
+			response = cpr::Post(cpr::Url(url));
+			cout << response.text << endl;
+		}
+		else if (command == "put") {
+			response = cpr::Put(cpr::Url(url));
+			cout << response.text << endl;
+		}
+		else if (command == "delete") {
+			response = cpr::Delete(cpr::Url(url));
+			cout << response.text << endl;
+		}
+	}
+}
