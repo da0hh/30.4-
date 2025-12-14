@@ -1,0 +1,23 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+#include <cpr/cpr.h>
+using namespace std;
+using namespace cpr;
+
+int main() {
+	setlocale(LC_ALL, "RU");
+	string url = "https://httpbin.org/html";
+	Response r = Get(Url(url), Header({{"accept", "text/html"}}));
+	string text = r.text;
+	
+	string start_tag = "<h1>";
+	string end_tag = "</h1>";
+
+	size_t start_pos = text.find(start_tag);
+    size_t end_pos = text.find(end_tag, start_pos);
+
+	size_t length = end_pos - (start_pos + start_tag.length());
+	string title = text.substr(start_pos + start_tag.length(), length);
+	cout << title;
+}
