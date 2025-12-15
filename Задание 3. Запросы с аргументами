@@ -1,0 +1,60 @@
+#include <iostream>
+#include <cpr/cpr.h>
+#include <string>
+#include <map>
+#include <vector>
+
+using namespace std;
+
+int main(){
+	setlocale(LC_ALL, "RU");
+	string url = "https://httpbin.org";
+	string key, value;
+	map<string, string> arguments;
+	vector<cpr::Pair> form_data;
+	
+	while (key != "post" || key != "get" || value != "post" || value != "get") {
+		cout << "Enter key and value (or 'post'/'get' to send): "; cin >> key;
+
+		if (key == "get" || key == "post")
+			break;
+
+		cout << "Enter value for this key: "; cin >> value;
+
+		arguments.emplace(key, value);
+		form_data.push_back(cpr::Pair((std::string)key, (std::string)value));
+	}
+
+
+	if (key == "post" || value == "post") {
+		cpr::Payload payload(form_data.begin(), form_data.end());
+		cpr::Response r = cpr::Post(cpr::Url{ url + "/post" }, payload);
+
+		if (r.status_code == 200) {
+			cout << "Response: " << r.text << endl;
+		}
+		else {
+			std::cerr << "\nRequest failed!\n";
+			std::cerr << "Status: " << r.status_code << std::endl;
+			std::cerr << "Error: " << r.error.message << std::endl;
+		}
+	}
+	else if (key == "get" || value == "get") {
+		map<string, string>::iterator it;
+		string extra_url = "/get?";
+		for (it = arguments.begin(); it != arguments.end(); it++) {
+			extra_url += it->first + "=" + it->second + "&";
+		}
+		extra_url.pop_back();
+
+		cpr::Response r = cpr::Get(cpr::Url(url + extra_url));
+		if (r.status_code == 200) {
+			cout << "Response: " << r.text << endl;
+		}
+		else {
+			std::cerr << "\nRequest failed!\n";
+			std::cerr << "Status: " << r.status_code << std::endl;
+			std::cerr << "Error: " << r.error.message << std::endl;
+		}
+	}
+}
